@@ -4,31 +4,42 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "otter-rb"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.name = 'otter-rb'
+    gem.summary = %Q{An EventMachine based library for the Topsy Otter API.}
+    gem.description = %Q{An EventMachine based library for the Topsy Otter API.}
     gem.email = "sprsquish@gmail.com"
-    gem.homepage = "http://github.com/sprsquish/otter-rb"
+    gem.homepage = "http://github.com/sprsquish/collecta-rb"
     gem.authors = ["Jeff Smick"]
-    gem.add_development_dependency "thoughtbot-shoulda"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+
+    gem.add_dependency "em-http-request"
+    gem.add_dependency "yajl-ruby"
+
+    gem.add_development_dependency "minitest"
+    gem.add_development_dependency "yard"
+
+    gem.files = FileList['examples/**/*', 'lib/**/*'].to_a
+
+    gem.test_files = FileList['spec/**/*.rb']
   end
+  Jeweler::GemcutterTasks.new
+  task :release => 'gemcutter:release'
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
 require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/*_test.rb'
+  test.libs << 'lib' << 'spec'
+  test.pattern = 'spec/**/*_spec.rb'
   test.verbose = true
 end
 
 begin
   require 'rcov/rcovtask'
   Rcov::RcovTask.new do |test|
-    test.libs << 'test'
-    test.pattern = 'test/**/*_test.rb'
+    test.libs << 'spec'
+    test.pattern = 'spec/**/*_spec.rb'
+    test.rcov_opts += ['--exclude \/Library\/Ruby,spec\/', '--xrefs']
     test.verbose = true
   end
 rescue LoadError
@@ -41,16 +52,11 @@ task :test => :check_dependencies
 
 task :default => :test
 
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  if File.exist?('VERSION')
-    version = File.read('VERSION')
-  else
-    version = ""
+begin
+  require 'yard'
+  YARD::Rake::YardocTask.new
+rescue LoadError
+  task :yardoc do
+    abort "YARD is not available. In order to run yardoc, you must: sudo gem install yard"
   end
-
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "otter-rb #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
 end
