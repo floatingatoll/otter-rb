@@ -5,8 +5,12 @@ module Otter
       @identifier = identifier
     end
 
-    def authorinfo(username, &block)
-      self.request('authorinfo', {:url => "http://twitter.com/#{username}"}, Author, block)
+    def twitterauthorinfo(username, &block)
+      self.authorinfo("http://twitter.com/#{username}", block)
+    end
+
+    def authorinfo(url, &block)
+      self.request('authorinfo', {:url => url}, Author, block)
     end
 
     def authorsearch(query, window = 'a', page = nil, perpage = nil, &block)
